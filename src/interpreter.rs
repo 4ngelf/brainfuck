@@ -103,4 +103,3 @@ pub fn evaluate(code: &str) -> Result<(), BadExpressionError> {
 
     Ok(())
 }
-

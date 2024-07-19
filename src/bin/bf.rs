@@ -1,8 +1,11 @@
-use brainfuck::{evaluate, BadExpressionError as BFError};
+use brainfuck::{evaluate, BadExpressionError};
 use clap::Parser;
-use std::fs::File;
-use std::io::{self, Read};
-use std::path::{Path, PathBuf};
+use derive_more::{Display, From};
+use std::{
+    fs::File,
+    io::{self, Read},
+    path::{Path, PathBuf},
+};
 
 /// BrainFuck Interpreter
 ///
@@ -14,30 +17,15 @@ struct Arguments {
     file: PathBuf,
 }
 
-#[derive(Debug)]
+#[derive(From, Display)]
 enum CliError {
     IO(io::Error),
-    Runtime(BFError),
+    Runtime(BadExpressionError),
 }
 
-impl std::fmt::Display for CliError {
+impl std::fmt::Debug for CliError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CliError::IO(e) => e.fmt(f),
-            CliError::Runtime(e) => e.fmt(f),
-        }
-    }
-}
-
-impl From<io::Error> for CliError {
-    fn from(value: io::Error) -> Self {
-        CliError::IO(value)
-    }
-}
-
-impl From<BFError> for CliError {
-    fn from(value: BFError) -> Self {
-        CliError::Runtime(value)
+        write!(f, "{self}")
     }
 }
 
@@ -53,9 +41,7 @@ fn main() -> Result<(), CliError> {
     let args = Arguments::parse();
     let code = read_file(&args.file)?;
 
-    if let Err(e) = evaluate(&code) {
-        eprintln!("Error: {e}")
-    }
+    evaluate(&code)?;
 
     Ok(())
 }

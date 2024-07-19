@@ -148,4 +148,3 @@ mod tests {
         assert_eq!(tree_error, Err(Bad::LoopNotClosed));
     }
 }
-

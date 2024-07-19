@@ -168,4 +168,3 @@ mod tests {
         assert_eq!(m.memory, vec![1, 3, 6, 2, u8::MAX - 1, u8::MAX - 2]);
     }
 }
-

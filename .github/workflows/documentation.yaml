@@ -3,8 +3,7 @@ name: Documentation
 on:
   workflow_dispatch:
   release:
-    types: [ published ]
-
+    types: [published]
 
 permissions:
   contents: read
@@ -25,9 +24,9 @@ jobs:
       - name: Setup pages
         uses: actions/configure-pages@v5
       - name: Clean documentation folder
-        run: cargo clean --doc
+        run: cargo clean --doc --verbose
       - name: Generate documentation
-        run: cargo doc --lib --no-deps
+        run: cargo doc --lib --no-deps --verbose
       - name: Add redirect
         run: echo '<meta http-equiv="refresh" content="0;url=brainfuck/index.html">' > target/doc/index.html
       - name: Remove .lock

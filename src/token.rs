@@ -69,14 +69,14 @@ mod tests {
         TO::Comment(b' '),
     ];
 
-    const TOKEN_STR: &'static str = "><+-,.[] ";
+    const TOKEN_STR: &str = "><+-,.[] ";
 
     #[test]
     fn token_char_conversions() {
         let pairs = TOKEN_STR.chars().zip(TOKENS);
 
         for (ch, token) in pairs {
-            assert_eq!(String::from(ch as char), format!("{token}"));
+            assert_eq!(String::from(ch), format!("{token}"));
             assert_eq!(token, ch.into());
         }
     }
@@ -90,4 +90,3 @@ mod tests {
         }
     }
 }
-

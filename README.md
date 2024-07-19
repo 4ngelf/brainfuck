@@ -11,9 +11,11 @@ bf examples/hello_world.bf
 
 ## Installation
 
-Ensure that [cargo](https://cargo) is installed and run:
+Ensure that [cargo][cargo.url] is installed and run:
 
-```
+[cargo.url]: https://doc.rust-lang.org/cargo/getting-started/installation.html
+
+```sh
 cargo install --git https://github.com/4ngelf/brainfuck
 ```
 
@@ -21,6 +23,10 @@ cargo install --git https://github.com/4ngelf/brainfuck
 
 You can the interpreter as a library to parse, manipulate and execute
 BrainFuck code.
+
+You can view the [documentation here][docs.url].
+
+[docs.url]: https://4ngelf.github.io/brainfuck/
 
 ### Example
 
