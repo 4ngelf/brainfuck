@@ -22,8 +22,8 @@ impl fmt::Display for Token {
             Token::MoveLeft => write!(f, "<"),
             Token::Increment => write!(f, "+"),
             Token::Decrement => write!(f, "-"),
-            Token::ReadByte => write!(f, "."),
-            Token::WriteByte => write!(f, ","),
+            Token::ReadByte => write!(f, ","),
+            Token::WriteByte => write!(f, "."),
             Token::LoopStart => write!(f, "["),
             Token::LoopEnd => write!(f, "]"),
             Token::Comment(char) => write!(f, "{char}"),
@@ -38,8 +38,8 @@ impl From<u8> for Token {
             b'<' => Token::MoveLeft,
             b'+' => Token::Increment,
             b'-' => Token::Decrement,
-            b'.' => Token::ReadByte,
-            b',' => Token::WriteByte,
+            b',' => Token::ReadByte,
+            b'.' => Token::WriteByte,
             b'[' => Token::LoopStart,
             b']' => Token::LoopEnd,
             _ => Token::Comment(value),
@@ -81,7 +81,7 @@ enum Expression {
     Loop(Vec<Expression>),
 }
 
-#[derive(Debug, PartialEq, Clone, Hash)]
+#[derive(Default, Debug, PartialEq, Clone, Hash)]
 struct InstructionTree(Vec<Expression>);
 
 impl InstructionTree {
@@ -129,11 +129,19 @@ impl InstructionTree {
             }
         }
     }
-}
 
-impl std::default::Default for InstructionTree {
-    fn default() -> Self {
-        InstructionTree(Vec::new())
+    fn parse_tokens<T>(tokens: T) -> Result<Self, BadExpressionError>
+    where
+        T: IntoIterator<Item = Token>,
+    {
+        let mut tokens = tokens.into_iter();
+        let mut expressions = Vec::new();
+
+        while let Some(expr) = InstructionTree::parse_next_generic_token(&mut tokens) {
+            expressions.push(expr?);
+        }
+
+        Ok(InstructionTree(expressions))
     }
 }
 
@@ -180,14 +188,7 @@ impl std::str::FromStr for InstructionTree {
     type Err = BadExpressionError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut tokens = s.bytes().map(Token::from);
-        let mut expressions = Vec::new();
-
-        while let Some(expr) = InstructionTree::parse_next_generic_token(&mut tokens) {
-            expressions.push(expr?);
-        }
-
-        Ok(InstructionTree(expressions))
+        Self::parse_tokens(s.bytes().map(Token::from))
     }
 }
 
@@ -206,7 +207,7 @@ struct MemoryContext {
 
 impl MemoryContext {
     pub fn new() -> Self {
-        Default::default()
+        Self::with_capacity(DEFAULT_BRAINFUCK_STACK_SIZE)
     }
 
     pub fn with_capacity(capacity: usize) -> Self {
@@ -258,7 +259,7 @@ impl MemoryContext {
 
 impl std::default::Default for MemoryContext {
     fn default() -> Self {
-        MemoryContext::with_capacity(DEFAULT_BRAINFUCK_STACK_SIZE)
+        Self::new()
     }
 }
 
@@ -276,7 +277,7 @@ fn get_byte() -> u8 {
 #[inline]
 fn print_byte(character: u8) {
     use std::io::{self, Write};
-    print!("{character}");
+    print!("{}", character as char);
     let _ = io::stdout().flush();
 }
 
@@ -314,7 +315,7 @@ impl From<BadExpressionError> for RuntimeError {
 impl fmt::Display for RuntimeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            RuntimeError::BadExpression(err) => err.fmt(f),
+            RuntimeError::BadExpression(err) => err.fmt(f)
         }
     }
 }
@@ -355,7 +356,7 @@ impl BrainFuckInterpreter {
         }
     }
 
-    pub fn feed_code(&mut self, code: &str) -> Result<(), BadExpressionError> {
+    pub fn feed_string(&mut self, code: &str) -> Result<(), BadExpressionError> {
         self.instructions += code.parse()?;
 
         Ok(())
@@ -370,10 +371,16 @@ impl BrainFuckInterpreter {
     }
 }
 
+impl std::default::Default for BrainFuckInterpreter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Run some Brainfuck code
 pub fn evaluate(code: &str) -> RuntimeResult {
     let mut interpreter = BrainFuckInterpreter::new();
-    interpreter.feed_code(code)?;
+    interpreter.feed_string(code)?;
 
     interpreter.execute()
 }

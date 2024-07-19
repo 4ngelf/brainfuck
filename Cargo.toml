@@ -1,7 +1,13 @@
 [package]
 name = "brainfuck"
+description = "A BrainFuck interpreter implementation"
 version = "0.1.0"
+authors = ["4ngelf"]
 edition = "2021"
+repository = "https://github.com/4ngelf/brainfuck"
+license = "MIT"
+keywords = ["brainfuck"]
+categories = ["command-line-utilities", "compilers"]
 
 [dependencies]
 clap = { version = "4.5.9", features = ["derive"] }

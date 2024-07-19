@@ -2,7 +2,7 @@ use brainfuck::evaluate;
 use clap::Parser;
 use std::fs::File;
 use std::io::{self, Read};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// BrainFuck Interpreter
 ///
@@ -22,9 +22,9 @@ enum CliError {
 
 impl std::fmt::Display for CliError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match *self {
+        match self {
             CliError::IO(e) => e.fmt(f),
-            CliError::Runtime(e) => e.fmt(f),
+            CliError::Runtime(e) => e.fmt(f)
         }
     }
 }
@@ -43,14 +43,21 @@ impl From<brainfuck::RuntimeError> for CliError {
 
 type CliResult = Result<(), CliError>;
 
+fn read_file<T: AsRef<Path>>(path: &T) -> io::Result<String> {
+    let mut f = File::open(path)?;
+    let mut output = String::new();
+    f.read_to_string(&mut output)?;
+
+    Ok(output)
+}
+
 fn main() -> CliResult {
     let args = Arguments::parse();
-    let mut code = String::new();
+    let code = read_file(&args.file)?;
 
-    File::from(args.file);
+    if let Err(e) = evaluate(&code) {
+        eprintln!("Error: {e}")
+    }
 
-    let path = args.file.to_str().unwrap_or("InvalidPath");
-
-    println!("Executing script from: {path}");
     Ok(())
 }
