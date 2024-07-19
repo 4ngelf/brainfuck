@@ -1,4 +1,4 @@
-use brainfuck::evaluate;
+use brainfuck::{evaluate, BadExpressionError as BFError};
 use clap::Parser;
 use std::fs::File;
 use std::io::{self, Read};
@@ -17,14 +17,14 @@ struct Arguments {
 #[derive(Debug)]
 enum CliError {
     IO(io::Error),
-    Runtime(brainfuck::RuntimeError),
+    Runtime(BFError),
 }
 
 impl std::fmt::Display for CliError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             CliError::IO(e) => e.fmt(f),
-            CliError::Runtime(e) => e.fmt(f)
+            CliError::Runtime(e) => e.fmt(f),
         }
     }
 }
@@ -35,13 +35,11 @@ impl From<io::Error> for CliError {
     }
 }
 
-impl From<brainfuck::RuntimeError> for CliError {
-    fn from(value: brainfuck::RuntimeError) -> Self {
+impl From<BFError> for CliError {
+    fn from(value: BFError) -> Self {
         CliError::Runtime(value)
     }
 }
-
-type CliResult = Result<(), CliError>;
 
 fn read_file<T: AsRef<Path>>(path: &T) -> io::Result<String> {
     let mut f = File::open(path)?;
@@ -51,7 +49,7 @@ fn read_file<T: AsRef<Path>>(path: &T) -> io::Result<String> {
     Ok(output)
 }
 
-fn main() -> CliResult {
+fn main() -> Result<(), CliError> {
     let args = Arguments::parse();
     let code = read_file(&args.file)?;
 
