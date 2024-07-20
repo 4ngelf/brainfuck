@@ -1,4 +1,11 @@
-# BrainFuck Interpreter
+# 💀 BrainFuck Interpreter &emsp; [![Build Status]][CI Actions] [![Docs Status]][Docs Actions] [![Latest Release]][Releases]
+
+[Build Status]: https://img.shields.io/github/actions/workflow/status/4ngelf/brainfuck/ci.yaml?branch=main&label=Tests
+[CI Actions]: https://github.com/4ngelf/brainfuck/actions/workflows/ci.yaml
+[Docs Status]: https://img.shields.io/github/actions/workflow/status/4ngelf/brainfuck/documentation.yaml?label=Docs
+[Docs Actions]: https://4ngelf.github.io/brainfuck/
+[Latest Release]: https://img.shields.io/github/v/release/4ngelf/brainfuck?label=latest
+[Releases]: https://github.com/4ngelf/brainfuck/releases/latest
 
 A simple brainfuck implementation in rust. It just works.
 
@@ -21,12 +28,12 @@ cargo install --git https://github.com/4ngelf/brainfuck
 
 ## Library
 
-You can the interpreter as a library to parse, manipulate and execute
+You can use the interpreter as a library to parse, manipulate and execute
 BrainFuck code.
 
-You can view the [documentation here][docs.url].
+See the [documentation here][Docs.url].
 
-[docs.url]: https://4ngelf.github.io/brainfuck/
+[Docs.url]: https://4ngelf.github.io/brainfuck/
 
 ### Example
 
