@@ -77,8 +77,16 @@ impl MemoryContext {
             Expression::Decrement => self.decrement(),
             Expression::Forward => self.move_forward(),
             Expression::Backward => self.move_backward(),
-            Expression::Input => self.set(get_byte()),
-            Expression::Output => print_byte(self.get()),
+            Expression::Input => {
+                use std::io::{stdin, Read};
+
+                if let Some(Ok(byte)) = stdin().bytes().next() {
+                    self.set(byte);
+                } else {
+                    self.set(0)
+                }
+            }
+            Expression::Output => print!("{}", self.get() as char),
             Expression::Loop(expressions) => {
                 while self.get() != 0 {
                     for expr in expressions {
@@ -94,24 +102,6 @@ impl std::default::Default for MemoryContext {
     fn default() -> Self {
         Self::new()
     }
-}
-
-#[inline]
-fn get_byte() -> u8 {
-    use std::io::{self, Read};
-    let mut byte: [u8; 1] = [0];
-
-    match io::stdin().read_exact(&mut byte) {
-        Ok(_) => byte[0],
-        Err(_) => 0,
-    }
-}
-
-#[inline]
-fn print_byte(character: u8) {
-    use std::io::{self, Write};
-    print!("{}", character as char);
-    let _ = io::stdout().flush();
 }
 
 #[cfg(test)]
